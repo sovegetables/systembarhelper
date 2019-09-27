@@ -40,7 +40,8 @@ dependencies {
     implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.40'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 //    implementation project(':library')
-    implementation project(':libSystembar')
+//    implementation project(':libSystembar')
+    implementation 'com.github.sovegetables:systembarhelper:0.1.0'
 
     implementation 'net.margaritov.preference.colorpicker.ColorPickerPreference:ColorPickerPreference:1.0.0'
 }
