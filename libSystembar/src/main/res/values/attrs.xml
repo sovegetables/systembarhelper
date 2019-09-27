@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="SystemBarView">
+        <attr name="type" format="enum">
+            <enum name="status_bar_type" value="1"/>
+            <enum name="navigation_bar_type" value="2"/>
+        </attr>
+    </declare-styleable>
+</resources>
