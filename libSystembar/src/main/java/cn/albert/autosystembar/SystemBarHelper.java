@@ -1,9 +1,11 @@
 package cn.albert.autosystembar;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -12,6 +14,7 @@ import android.view.WindowManager;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
+import androidx.annotation.RequiresApi;
 import androidx.core.view.OnApplyWindowInsetsListener;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -77,89 +80,195 @@ public class SystemBarHelper {
         Collections.unmodifiableCollection(NAVIGATION_BAR_STYLES);
     }
 
+    interface BarBaseCompact{
+        void setStatusBarColor(@ColorInt int statusBarColor);
+        void setStatusBarDrawable(Drawable drawable);
+        void enableImmersedStatusBar(boolean immersed);
+        void enableImmersedNavigationBar(boolean immersed);
+        void setNavigationBarDrawable(Drawable drawable);
+        void setNavigationBarColor(@ColorInt int navigationBarColor);
+        void statusBarFontStyle(@StatusBarFontStyle int statusBarFontStyle);
+        void navigationBarStyle(int navigationBarStyle);
+    }
+
+    static class Base implements BarBaseCompact{
+
+        Builder mBuilder;
+
+        Base(Builder builder) {
+            this.mBuilder = builder;
+        }
+
+        @Override
+        public void setStatusBarColor(int statusBarColor) {
+        }
+
+        @Override
+        public void setStatusBarDrawable(Drawable drawable) {
+        }
+
+        @Override
+        public void enableImmersedStatusBar(boolean immersed) {
+        }
+
+        @Override
+        public void enableImmersedNavigationBar(boolean immersed) {
+        }
+
+        @Override
+        public void setNavigationBarDrawable(Drawable drawable) {
+        }
+
+        @Override
+        public void setNavigationBarColor(int navigationBarColor) {
+        }
+
+        @Override
+        public void statusBarFontStyle(int statusBarFontStyle) {
+        }
+
+        @Override
+        public void navigationBarStyle(int navigationBarStyle) {
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    static class Lollipop extends Base{
+
+        Lollipop(Builder builder) {
+            super(builder);
+        }
+
+        @Override
+        public void setStatusBarColor(int statusBarColor) {
+            if(mBuilder.mIsImmersedStatusBar){
+                final InternalLayout internalLayout = mBuilder.mInternalLayout;
+                if(internalLayout != null){
+                    internalLayout.setStatusBarColor(statusBarColor);
+                }
+            }else {
+                mBuilder.mActivity.getWindow().setStatusBarColor(statusBarColor);
+            }
+        }
+
+        @Override
+        public void setStatusBarDrawable(Drawable drawable) {
+            if(mBuilder.mIsImmersedStatusBar){
+                final InternalLayout internalLayout = mBuilder.mInternalLayout;
+                if(internalLayout != null){
+                    internalLayout.setStatusBarDrawable(drawable);
+                }
+            }else {
+                //非沉浸式不支持Drawable
+            }
+        }
+
+        @Override
+        public void enableImmersedStatusBar(boolean immersed) {
+            if(mBuilder.mIsImmersedStatusBar){
+                final InternalLayout internalLayout = mBuilder.mInternalLayout;
+                if(internalLayout != null){
+                    internalLayout.enableImmersedStatusBar(immersed);
+                }
+            }
+        }
+
+        @Override
+        public void enableImmersedNavigationBar(boolean immersed) {
+            if(mBuilder.mIsImmersedNavigationBar){
+                final InternalLayout internalLayout = mBuilder.mInternalLayout;
+                if(internalLayout != null){
+                    internalLayout.enableImmersedNavigationBar(immersed);
+                }
+            }
+        }
+
+        @Override
+        public void setNavigationBarDrawable(Drawable drawable) {
+            if(mBuilder.mIsImmersedNavigationBar){
+                final InternalLayout internalLayout = mBuilder.mInternalLayout;
+                if(internalLayout != null){
+                    internalLayout.setNavigationDrawable(drawable);
+                }
+            }
+        }
+
+        @Override
+        public void setNavigationBarColor(int navigationBarColor) {
+            if(mBuilder.mIsImmersedNavigationBar) {
+                final InternalLayout internalLayout = mBuilder.mInternalLayout;
+                if(internalLayout != null){
+                    internalLayout.setNavigationBarColor(navigationBarColor);
+                }
+            }else {
+                mBuilder.mActivity.getWindow().setNavigationBarColor(navigationBarColor);
+            }
+        }
+
+        @Override
+        public void statusBarFontStyle(int statusBarFontStyle) {
+            boolean isDarkFont = statusBarFontStyle == STATUS_BAR_DARK_FONT_STYLE;
+            for (IStatusBarFontStyle style: STATUS_BAR_FONT_STYLES){
+                if(style.verify()){
+                    style.statusBarFontStyle(mBuilder.mActivity, isDarkFont);
+                    break;
+                }
+            }
+        }
+
+        @Override
+        public void navigationBarStyle(int navigationBarStyle) {
+            boolean isDark = navigationBarStyle == NAVIGATION_BAR_DARK_ICON_STYLE;
+            for (INavigationBarStyle style: NAVIGATION_BAR_STYLES){
+                if(style.verify()){
+                    style.navigationStyle(mBuilder.mActivity, isDark);
+                    break;
+                }
+            }
+        }
+    }
+
+    private final BarBaseCompact mBarBaseCompact;
+
     private SystemBarHelper(Builder builder){
         mBuilder = builder;
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+            mBarBaseCompact = new Lollipop(builder);
+        }else {
+            mBarBaseCompact = new Base(builder);
+        }
     }
 
     public void setStatusBarColor(@ColorInt int statusBarColor) {
-        if(mBuilder.mIsImmersedStatusBar){
-            final InternalLayout internalLayout = mBuilder.mInternalLayout;
-            if(internalLayout != null){
-                internalLayout.setStatusBarColor(statusBarColor);
-            }
-        }else {
-            mBuilder.mActivity.getWindow().setStatusBarColor(statusBarColor);
-        }
+        mBarBaseCompact.setStatusBarColor(statusBarColor);
     }
 
     public void setStatusBarDrawable(Drawable drawable){
-        if(mBuilder.mIsImmersedStatusBar){
-            final InternalLayout internalLayout = mBuilder.mInternalLayout;
-            if(internalLayout != null){
-                internalLayout.setStatusBarDrawable(drawable);
-            }
-        }else {
-            //非沉浸式不支持Drawable
-        }
-
+        mBarBaseCompact.setStatusBarDrawable(drawable);
     }
 
     public void enableImmersedStatusBar(boolean immersed){
-        if(mBuilder.mIsImmersedStatusBar){
-            final InternalLayout internalLayout = mBuilder.mInternalLayout;
-            if(internalLayout != null){
-                internalLayout.enableImmersedStatusBar(immersed);
-            }
-        }
+        mBarBaseCompact.enableImmersedStatusBar(immersed);
     }
 
     public void enableImmersedNavigationBar(boolean immersed){
-        if(mBuilder.mIsImmersedNavigationBar){
-            final InternalLayout internalLayout = mBuilder.mInternalLayout;
-            if(internalLayout != null){
-                internalLayout.enableImmersedNavigationBar(immersed);
-            }
-        }
+        mBarBaseCompact.enableImmersedNavigationBar(immersed);
     }
 
     public void setNavigationBarDrawable(Drawable drawable){
-        if(mBuilder.mIsImmersedNavigationBar){
-            final InternalLayout internalLayout = mBuilder.mInternalLayout;
-            if(internalLayout != null){
-                internalLayout.setNavigationDrawable(drawable);
-            }
-        }
+        mBarBaseCompact.setNavigationBarDrawable(drawable);
     }
 
     public void setNavigationBarColor(@ColorInt int navigationBarColor) {
-        if(mBuilder.mIsImmersedNavigationBar) {
-            final InternalLayout internalLayout = mBuilder.mInternalLayout;
-            if(internalLayout != null){
-                internalLayout.setNavigationBarColor(navigationBarColor);
-            }
-        }else {
-            mBuilder.mActivity.getWindow().setNavigationBarColor(navigationBarColor);
-        }
+        mBarBaseCompact.setNavigationBarColor(navigationBarColor);
     }
 
     public void statusBarFontStyle(@StatusBarFontStyle int statusBarFontStyle) {
-        boolean isDarkFont = statusBarFontStyle == STATUS_BAR_DARK_FONT_STYLE;
-        for (IStatusBarFontStyle style: STATUS_BAR_FONT_STYLES){
-            if(style.verify()){
-                style.statusBarFontStyle(mBuilder.mActivity, isDarkFont);
-                break;
-            }
-        }
+        mBarBaseCompact.statusBarFontStyle(statusBarFontStyle);
     }
 
     public void navigationBarStyle(int navigationBarStyle) {
-        boolean isDark = navigationBarStyle == NAVIGATION_BAR_DARK_ICON_STYLE;
-        for (INavigationBarStyle style: NAVIGATION_BAR_STYLES){
-            if(style.verify()){
-                style.navigationStyle(mBuilder.mActivity, isDark);
-                break;
-            }
-        }
+        mBarBaseCompact.navigationBarStyle(navigationBarStyle);
     }
 
     public static class Builder{
