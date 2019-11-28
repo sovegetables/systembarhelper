@@ -4,6 +4,11 @@
 
 [![](https://jitpack.io/v/sovegetables/systembarhelper.svg)](https://jitpack.io/#sovegetables/systembarhelper)
 #### Usage
+```groovy
+    maven { url "https://jitpack.io" }
+    
+    implementation 'com.github.sovegetables:systembarhelper:0.1.2'
+```
 
 ```java
     SystemBarHelper.Builder().into(activity)
