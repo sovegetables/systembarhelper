@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     >
 
-    <cn.albert.autosystembar.SystemBarView
+    <!--<cn.albert.autosystembar.SystemBarView
         android:id="@+id/status_bar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -23,7 +23,7 @@
         android:layout_alignParentBottom="true"
         android:background="@color/colorPrimary"
         app:type="navigation_bar_type"
-        />
+        />-->
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"

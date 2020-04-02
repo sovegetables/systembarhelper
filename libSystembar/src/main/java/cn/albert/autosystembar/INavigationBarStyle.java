@@ -6,7 +6,7 @@ import android.os.Build;
 import android.view.View;
 import android.view.Window;
 
-public interface INavigationBarStyle {
+interface INavigationBarStyle {
     boolean navigationStyle(Activity activity, boolean darkStyle);
     boolean verify();
 

@@ -1,7 +1,6 @@
 package cn.albert.autosystembar;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
@@ -13,8 +12,8 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.ColorRes;
 import androidx.annotation.IntDef;
-import androidx.annotation.RequiresApi;
 import androidx.core.view.OnApplyWindowInsetsListener;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -23,7 +22,6 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -32,7 +30,7 @@ import java.util.List;
  */
 
 @SuppressWarnings("unused")
-public class SystemBarHelper {
+public class SystemBarHelper implements SystemBarCompact{
 
     private static final String TAG = "SystemBarHelper";
     private Builder mBuilder;
@@ -49,248 +47,107 @@ public class SystemBarHelper {
     @Retention(RetentionPolicy.SOURCE)
     public @interface NavigationBarIconStyle {}
 
-    private static final List<IStatusBar> STATUS_BARS = new ArrayList<>();
+    static final List<IStatusBar> STATUS_BARS = new ArrayList<>();
 
-    private static final List<INavigationBar> NAVIGATION_BARS = new ArrayList<>();
+    static final List<INavigationBar> NAVIGATION_BARS = new ArrayList<>();
 
-    private static final List<IStatusBarFontStyle> STATUS_BAR_FONT_STYLES = new ArrayList<>();
+    static final List<IStatusBarFontStyle> STATUS_BAR_FONT_STYLES = new ArrayList<>();
 
-    private static final List<INavigationBarStyle> NAVIGATION_BAR_STYLES = new ArrayList<>();
+    static final List<INavigationBarStyle> NAVIGATION_BAR_STYLES = new ArrayList<>();
 
     static {
         STATUS_BARS.add(new IStatusBar.EMUI3_1());
         STATUS_BARS.add(new IStatusBar.Lollipop());
         STATUS_BARS.add(new IStatusBar.Kitkat());
         STATUS_BARS.add(new IStatusBar.Base());
-        Collections.unmodifiableCollection(STATUS_BARS);
 
         NAVIGATION_BARS.add(new INavigationBar.Lollipop());
         NAVIGATION_BARS.add(new INavigationBar.Kitkat());
         NAVIGATION_BARS.add(new INavigationBar.Base());
-        Collections.unmodifiableCollection(NAVIGATION_BARS);
 
         STATUS_BAR_FONT_STYLES.add(new IStatusBarFontStyle.Meizu());
         STATUS_BAR_FONT_STYLES.add(new IStatusBarFontStyle.MIUI());
         STATUS_BAR_FONT_STYLES.add(new IStatusBarFontStyle.M());
         STATUS_BAR_FONT_STYLES.add(new IStatusBarFontStyle.Base());
-        Collections.unmodifiableCollection(STATUS_BAR_FONT_STYLES);
 
         NAVIGATION_BAR_STYLES.add(new INavigationBarStyle.O());
         NAVIGATION_BAR_STYLES.add(new INavigationBarStyle.Base());
-        Collections.unmodifiableCollection(NAVIGATION_BAR_STYLES);
     }
 
-    interface BarBaseCompact{
-        void setStatusBarColor(@ColorInt int statusBarColor);
-        void setStatusBarDrawable(Drawable drawable);
-        void enableImmersedStatusBar(boolean immersed);
-        void enableImmersedNavigationBar(boolean immersed);
-        void setNavigationBarDrawable(Drawable drawable);
-        void setNavigationBarColor(@ColorInt int navigationBarColor);
-        void statusBarFontStyle(@StatusBarFontStyle int statusBarFontStyle);
-        void navigationBarStyle(int navigationBarStyle);
-    }
-
-    static class Base implements BarBaseCompact{
-
-        Builder mBuilder;
-
-        Base(Builder builder) {
-            this.mBuilder = builder;
-        }
-
-        @Override
-        public void setStatusBarColor(int statusBarColor) {
-        }
-
-        @Override
-        public void setStatusBarDrawable(Drawable drawable) {
-        }
-
-        @Override
-        public void enableImmersedStatusBar(boolean immersed) {
-        }
-
-        @Override
-        public void enableImmersedNavigationBar(boolean immersed) {
-        }
-
-        @Override
-        public void setNavigationBarDrawable(Drawable drawable) {
-        }
-
-        @Override
-        public void setNavigationBarColor(int navigationBarColor) {
-        }
-
-        @Override
-        public void statusBarFontStyle(int statusBarFontStyle) {
-        }
-
-        @Override
-        public void navigationBarStyle(int navigationBarStyle) {
-        }
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    static class Lollipop extends Base{
-
-        Lollipop(Builder builder) {
-            super(builder);
-        }
-
-        @Override
-        public void setStatusBarColor(int statusBarColor) {
-            if(mBuilder.mIsImmersedStatusBar){
-                final InternalLayout internalLayout = mBuilder.mInternalLayout;
-                if(internalLayout != null){
-                    internalLayout.setStatusBarColor(statusBarColor);
-                }
-            }else {
-                mBuilder.mActivity.getWindow().setStatusBarColor(statusBarColor);
-            }
-        }
-
-        @Override
-        public void setStatusBarDrawable(Drawable drawable) {
-            if(mBuilder.mIsImmersedStatusBar){
-                final InternalLayout internalLayout = mBuilder.mInternalLayout;
-                if(internalLayout != null){
-                    internalLayout.setStatusBarDrawable(drawable);
-                }
-            }else {
-                //非沉浸式不支持Drawable
-            }
-        }
-
-        @Override
-        public void enableImmersedStatusBar(boolean immersed) {
-            if(mBuilder.mIsImmersedStatusBar){
-                final InternalLayout internalLayout = mBuilder.mInternalLayout;
-                if(internalLayout != null){
-                    internalLayout.enableImmersedStatusBar(immersed);
-                }
-            }
-        }
-
-        @Override
-        public void enableImmersedNavigationBar(boolean immersed) {
-            if(mBuilder.mIsImmersedNavigationBar){
-                final InternalLayout internalLayout = mBuilder.mInternalLayout;
-                if(internalLayout != null){
-                    internalLayout.enableImmersedNavigationBar(immersed);
-                }
-            }
-        }
-
-        @Override
-        public void setNavigationBarDrawable(Drawable drawable) {
-            if(mBuilder.mIsImmersedNavigationBar){
-                final InternalLayout internalLayout = mBuilder.mInternalLayout;
-                if(internalLayout != null){
-                    internalLayout.setNavigationDrawable(drawable);
-                }
-            }
-        }
-
-        @Override
-        public void setNavigationBarColor(int navigationBarColor) {
-            if(mBuilder.mIsImmersedNavigationBar) {
-                final InternalLayout internalLayout = mBuilder.mInternalLayout;
-                if(internalLayout != null){
-                    internalLayout.setNavigationBarColor(navigationBarColor);
-                }
-            }else {
-                mBuilder.mActivity.getWindow().setNavigationBarColor(navigationBarColor);
-            }
-        }
-
-        @Override
-        public void statusBarFontStyle(int statusBarFontStyle) {
-            boolean isDarkFont = statusBarFontStyle == STATUS_BAR_DARK_FONT_STYLE;
-            for (IStatusBarFontStyle style: STATUS_BAR_FONT_STYLES){
-                if(style.verify()){
-                    style.statusBarFontStyle(mBuilder.mActivity, isDarkFont);
-                    break;
-                }
-            }
-        }
-
-        @Override
-        public void navigationBarStyle(int navigationBarStyle) {
-            boolean isDark = navigationBarStyle == NAVIGATION_BAR_DARK_ICON_STYLE;
-            for (INavigationBarStyle style: NAVIGATION_BAR_STYLES){
-                if(style.verify()){
-                    style.navigationStyle(mBuilder.mActivity, isDark);
-                    break;
-                }
-            }
-        }
-    }
-
-    private final BarBaseCompact mBarBaseCompact;
+    private final SystemBarCompact mSystemBarCompact;
 
     private SystemBarHelper(Builder builder){
         mBuilder = builder;
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
-            mBarBaseCompact = new Lollipop(builder);
+            mSystemBarCompact = new Lollipop(builder);
         }else {
-            mBarBaseCompact = new Base(builder);
+            mSystemBarCompact = new Base(builder);
         }
     }
 
     public void setStatusBarColor(@ColorInt int statusBarColor) {
-        mBarBaseCompact.setStatusBarColor(statusBarColor);
+        mSystemBarCompact.setStatusBarColor(statusBarColor);
+    }
+
+    @Override
+    public void setStatusBarColorRes(@ColorRes int statusBarColorRes) {
+        mSystemBarCompact.setStatusBarColorRes(statusBarColorRes);
     }
 
     public void setStatusBarDrawable(Drawable drawable){
-        mBarBaseCompact.setStatusBarDrawable(drawable);
+        mSystemBarCompact.setStatusBarDrawable(drawable);
     }
 
     public void enableImmersedStatusBar(boolean immersed){
-        mBarBaseCompact.enableImmersedStatusBar(immersed);
+        mSystemBarCompact.enableImmersedStatusBar(immersed);
     }
 
     public void enableImmersedNavigationBar(boolean immersed){
-        mBarBaseCompact.enableImmersedNavigationBar(immersed);
+        mSystemBarCompact.enableImmersedNavigationBar(immersed);
     }
 
     public void setNavigationBarDrawable(Drawable drawable){
-        mBarBaseCompact.setNavigationBarDrawable(drawable);
+        mSystemBarCompact.setNavigationBarDrawable(drawable);
     }
 
     public void setNavigationBarColor(@ColorInt int navigationBarColor) {
-        mBarBaseCompact.setNavigationBarColor(navigationBarColor);
+        mSystemBarCompact.setNavigationBarColor(navigationBarColor);
+    }
+
+    @Override
+    public void setNavigationBarColorRes(@ColorRes int navigationBarColorRes) {
+        mSystemBarCompact.setNavigationBarColorRes(navigationBarColorRes);
     }
 
     public void statusBarFontStyle(@StatusBarFontStyle int statusBarFontStyle) {
-        mBarBaseCompact.statusBarFontStyle(statusBarFontStyle);
+        mSystemBarCompact.statusBarFontStyle(statusBarFontStyle);
     }
 
-    public void navigationBarStyle(int navigationBarStyle) {
-        mBarBaseCompact.navigationBarStyle(navigationBarStyle);
+    public void navigationBarStyle(@NavigationBarIconStyle int navigationBarStyle) {
+        mSystemBarCompact.navigationBarStyle(navigationBarStyle);
     }
 
     public static class Builder{
 
-        @ColorInt
-        private int mStatusBarColor;
-        @StatusBarFontStyle private int mStatusBarFontStyle = STATUS_BAR_LIGHT_FONT_STYLE;
-        @ColorInt private int mNavigationBarColor;
-        private Drawable mStatusBarDrawable;
-        private Drawable mNavigationBarDrawable;
-        private boolean mIsSetStatusBarColor;
-        private boolean mIsSetNavigationBarColor;
-        private InternalLayout mInternalLayout;
-        private boolean mIsImmersedStatusBar;
-        private boolean mIsImmersedNavigationBar;
+        static final int NOT_SET = -1;
 
-        private Activity mActivity;
-        private boolean mIsAuto = false;
+        @ColorInt
+        int mStatusBarColor = NOT_SET;
+        @StatusBarFontStyle private int mStatusBarFontStyle = STATUS_BAR_LIGHT_FONT_STYLE;
+        @ColorInt
+        private int mNavigationBarColor = NOT_SET;
+        Drawable mStatusBarDrawable;
+        Drawable mNavigationBarDrawable;
+        InternalLayout mInternalLayout;
+        boolean mIsImmersedStatusBar;
+        boolean mIsImmersedNavigationBar;
+
+        Activity mActivity;
+        boolean mIsAuto = false;
 
         private static final int PADDING = 10;
-
         private static final int ACTION_BAR_DEFAULT_HEIGHT = 48; // dp
+
         @NavigationBarIconStyle
         private int mNavigationBarStyle = NAVIGATION_BAR_LIGHT_ICON_STYLE;
 
@@ -305,7 +162,6 @@ public class SystemBarHelper {
         }
 
         public Builder statusBarColor(@ColorInt int statusBarColor){
-            mIsSetStatusBarColor = true;
             mStatusBarColor = statusBarColor;
             return this;
         }
@@ -321,7 +177,6 @@ public class SystemBarHelper {
         }
 
         public Builder navigationBarColor(@ColorInt int navigationBarColor){
-            mIsSetNavigationBarColor = true;
             mNavigationBarColor = navigationBarColor;
             return this;
         }
@@ -341,6 +196,10 @@ public class SystemBarHelper {
             return this;
         }
 
+        boolean isSet(int color) {
+            return color != NOT_SET;
+        }
+
         public SystemBarHelper into(Activity activity){
             mActivity = activity;
             SystemBarHelper systemBarHelper = new SystemBarHelper(this);
@@ -353,7 +212,11 @@ public class SystemBarHelper {
                     }
                 }
             }else {
-                activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+                if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
+                    activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+                }else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+                    activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                }
             }
             boolean isExpandedLayout2NavigationBar = false;
             if(mIsImmersedNavigationBar){
@@ -364,14 +227,18 @@ public class SystemBarHelper {
                     }
                 }
             }else {
-                activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+                if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
+                    activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+                }else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+                    activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                }
             }
             systemBarHelper.statusBarFontStyle(mStatusBarFontStyle);
             systemBarHelper.navigationBarStyle(mNavigationBarStyle);
-            if(!isExpandedLayout2StatusBar && mIsSetStatusBarColor){
+            if(!isExpandedLayout2StatusBar && isSet(mStatusBarColor)){
                 systemBarHelper.setStatusBarColor(mStatusBarColor);
             }
-            if(!isExpandedLayout2NavigationBar && mIsSetNavigationBarColor){
+            if(!isExpandedLayout2NavigationBar && isSet(mNavigationBarColor)){
                 systemBarHelper.setNavigationBarColor(mNavigationBarColor);
             }
             if(isExpandedLayout2StatusBar || isExpandedLayout2NavigationBar){
@@ -400,7 +267,6 @@ public class SystemBarHelper {
                                 Rect rect = new Rect(0, top, bitmap.getWidth(), bottom);
                                 PaletteHelper paletteHelper = new PaletteHelper(bitmap, rect);
                                 PaletteHelper.Model model = paletteHelper.findCloseColorWithSync();
-                                mIsSetStatusBarColor = true;
                                 mStatusBarColor = model.color;
                                 mStatusBarFontStyle = model.isDarkStyle ? STATUS_BAR_DARK_FONT_STYLE : STATUS_BAR_LIGHT_FONT_STYLE;
                                 helper.statusBarFontStyle(mStatusBarFontStyle);
@@ -419,13 +285,13 @@ public class SystemBarHelper {
                         }
                         helper.enableImmersedStatusBar(mIsImmersedStatusBar);
                         helper.enableImmersedNavigationBar(mIsImmersedNavigationBar);
-                        if(mIsSetNavigationBarColor && isExpandedLayout2NavigationBar){
+                        if(isSet(mNavigationBarColor) && isExpandedLayout2NavigationBar){
                             helper.setNavigationBarColor(mNavigationBarColor);
                         }
                         if(mNavigationBarDrawable != null){
                             helper.setNavigationBarDrawable(mNavigationBarDrawable);
                         }
-                        if (mIsSetStatusBarColor && isExpandedLayout2StatusBar) {
+                        if (isSet(mStatusBarColor) && isExpandedLayout2StatusBar) {
                             helper.setStatusBarColor(mStatusBarColor);
                         }
                         if (mStatusBarDrawable != null) {

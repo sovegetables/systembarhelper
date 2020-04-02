@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/SystemBarHelper.iml" filepath="$PROJECT_DIR$/SystemBarHelper.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/libSystembar/libSystembar.iml" filepath="$PROJECT_DIR$/libSystembar/libSystembar.iml" />
+      <module fileurl="file://$PROJECT_DIR$/SystemBarHelper.iml" filepath="$PROJECT_DIR$/SystemBarHelper.iml" group="SystemBarHelper" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" group="SystemBarHelper/app" />
+      <module fileurl="file://$PROJECT_DIR$/libSystembar/libSystembar.iml" filepath="$PROJECT_DIR$/libSystembar/libSystembar.iml" group="SystemBarHelper/libSystembar" />
     </modules>
   </component>
 </project>

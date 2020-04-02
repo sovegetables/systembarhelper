@@ -1,13 +1,17 @@
 package cn.albert.autosystembar;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
+import android.view.KeyCharacterMap;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.ViewParent;
 import android.view.WindowManager;
 
@@ -28,6 +32,36 @@ class Utils {
     static int sStatusBarHeight;
     private static boolean sIsInitializeNavigationBar;
     static int sNavigationBarHeight;
+
+    static boolean hasNavigator(Context context){
+        boolean hasNavigationBar = false;
+        boolean hasMenuKey = ViewConfiguration.get(context).hasPermanentMenuKey();
+        boolean hasBackKey = KeyCharacterMap.deviceHasKey(KeyEvent.KEYCODE_BACK);
+        if(!hasMenuKey && !hasBackKey) {
+            hasNavigationBar = true;
+        }
+        Resources resources = context.getResources();
+        int resourceId = resources.getIdentifier("config_showNavigationBar", "bool", "android");
+        return resourceId > 0 && resources.getBoolean(resourceId);
+    }
+
+    private int getStatusBarHeight(Resources resources){
+        int  result = 0;
+        int resourceId = resources.getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            result = resources.getDimensionPixelSize(resourceId);
+        }
+        return result;
+    }
+
+    private int getNavigationBarHeight(Resources resources){
+        int resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            return resources.getDimensionPixelSize(resourceId);
+        } else {
+            return 0;
+        }
+    }
 
     static void initializeStatusBar(View view) {
         if (sIsInitializeStatusBar) {
