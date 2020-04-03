@@ -133,9 +133,11 @@ public class SystemBarHelper implements SystemBarCompact{
 
         @ColorInt
         int mStatusBarColor = NOT_SET;
+        boolean mIsStatusBarColorSet = false;
         @StatusBarFontStyle private int mStatusBarFontStyle = STATUS_BAR_LIGHT_FONT_STYLE;
         @ColorInt
         private int mNavigationBarColor = NOT_SET;
+        boolean mIsNavigationBarColorSet = false;
         Drawable mStatusBarDrawable;
         Drawable mNavigationBarDrawable;
         InternalLayout mInternalLayout;
@@ -162,6 +164,7 @@ public class SystemBarHelper implements SystemBarCompact{
         }
 
         public Builder statusBarColor(@ColorInt int statusBarColor){
+            mIsStatusBarColorSet = true;
             mStatusBarColor = statusBarColor;
             return this;
         }
@@ -177,6 +180,7 @@ public class SystemBarHelper implements SystemBarCompact{
         }
 
         public Builder navigationBarColor(@ColorInt int navigationBarColor){
+            mIsNavigationBarColorSet = true;
             mNavigationBarColor = navigationBarColor;
             return this;
         }
@@ -194,10 +198,6 @@ public class SystemBarHelper implements SystemBarCompact{
         public Builder navigationBarStyle(@NavigationBarIconStyle int style){
             mNavigationBarStyle = style;
             return this;
-        }
-
-        boolean isSet(int color) {
-            return color != NOT_SET;
         }
 
         public SystemBarHelper into(Activity activity){
@@ -235,10 +235,10 @@ public class SystemBarHelper implements SystemBarCompact{
             }
             systemBarHelper.statusBarFontStyle(mStatusBarFontStyle);
             systemBarHelper.navigationBarStyle(mNavigationBarStyle);
-            if(!isExpandedLayout2StatusBar && isSet(mStatusBarColor)){
+            if(!isExpandedLayout2StatusBar && mIsStatusBarColorSet){
                 systemBarHelper.setStatusBarColor(mStatusBarColor);
             }
-            if(!isExpandedLayout2NavigationBar && isSet(mNavigationBarColor)){
+            if(!isExpandedLayout2NavigationBar && mIsNavigationBarColorSet){
                 systemBarHelper.setNavigationBarColor(mNavigationBarColor);
             }
             if(isExpandedLayout2StatusBar || isExpandedLayout2NavigationBar){
@@ -285,13 +285,13 @@ public class SystemBarHelper implements SystemBarCompact{
                         }
                         helper.enableImmersedStatusBar(mIsImmersedStatusBar);
                         helper.enableImmersedNavigationBar(mIsImmersedNavigationBar);
-                        if(isSet(mNavigationBarColor) && isExpandedLayout2NavigationBar){
+                        if(mIsNavigationBarColorSet && isExpandedLayout2NavigationBar){
                             helper.setNavigationBarColor(mNavigationBarColor);
                         }
                         if(mNavigationBarDrawable != null){
                             helper.setNavigationBarDrawable(mNavigationBarDrawable);
                         }
-                        if (isSet(mStatusBarColor) && isExpandedLayout2StatusBar) {
+                        if (mIsStatusBarColorSet && isExpandedLayout2StatusBar) {
                             helper.setStatusBarColor(mStatusBarColor);
                         }
                         if (mStatusBarDrawable != null) {
