@@ -22,6 +22,7 @@ class Lollipop extends Base {
                 internalLayout.setStatusBarColor(statusBarColor);
             }
         }else {
+            mBuilder.mActivity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             mBuilder.mActivity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             mBuilder.mActivity.getWindow().setStatusBarColor(statusBarColor);
         }
@@ -77,6 +78,7 @@ class Lollipop extends Base {
                 internalLayout.setNavigationBarColor(navigationBarColor);
             }
         }else {
+            mBuilder.mActivity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
             mBuilder.mActivity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             mBuilder.mActivity.getWindow().setNavigationBarColor(navigationBarColor);
         }

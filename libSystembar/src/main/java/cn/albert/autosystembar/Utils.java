@@ -33,19 +33,17 @@ class Utils {
     private static boolean sIsInitializeNavigationBar;
     static int sNavigationBarHeight;
 
-    static boolean hasNavigator(Context context){
+    static boolean hasNavigationBar(Context context){
         boolean hasNavigationBar = false;
         boolean hasMenuKey = ViewConfiguration.get(context).hasPermanentMenuKey();
         boolean hasBackKey = KeyCharacterMap.deviceHasKey(KeyEvent.KEYCODE_BACK);
         if(!hasMenuKey && !hasBackKey) {
             hasNavigationBar = true;
         }
-        Resources resources = context.getResources();
-        int resourceId = resources.getIdentifier("config_showNavigationBar", "bool", "android");
-        return resourceId > 0 && resources.getBoolean(resourceId);
+        return hasNavigationBar;
     }
 
-    private int getStatusBarHeight(Resources resources){
+    private static int getStatusBarHeight(Resources resources){
         int  result = 0;
         int resourceId = resources.getIdentifier("status_bar_height", "dimen", "android");
         if (resourceId > 0) {
@@ -54,7 +52,7 @@ class Utils {
         return result;
     }
 
-    private int getNavigationBarHeight(Resources resources){
+    private static int getNavigationBarHeight(Resources resources){
         int resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android");
         if (resourceId > 0) {
             return resources.getDimensionPixelSize(resourceId);
@@ -70,16 +68,26 @@ class Utils {
         sIsInitializeStatusBar = true;
         Context context = view.getContext();
         try {
-            Class<?> clazz = Class.forName("com.android.internal.R$dimen");
-            Field field = clazz.getField("status_bar_height");
-            int x = Integer.parseInt(field.get(clazz.newInstance()).toString());
-            sStatusBarHeight = context.getResources().getDimensionPixelSize(x);
+            sStatusBarHeight = getStatusBarHeight(context.getResources());
+            if(sStatusBarHeight <= 0){
+                throw new SystemBarErrorException();
+            }
         } catch (Throwable e) {
-            Rect outRect = new Rect();
-            View decorView = getParentView(view);
-            decorView.getWindowVisibleDisplayFrame(outRect);
-            sStatusBarHeight = outRect.top;
+            try {
+                Class<?> clazz = Class.forName("com.android.internal.R$dimen");
+                Field field = clazz.getField("status_bar_height");
+                int x = Integer.parseInt(field.get(clazz.newInstance()).toString());
+                sStatusBarHeight = context.getResources().getDimensionPixelSize(x);
+            } catch (Throwable e1) {
+                Rect outRect = new Rect();
+                View decorView = getParentView(view);
+                decorView.getWindowVisibleDisplayFrame(outRect);
+                sStatusBarHeight = outRect.top;
+            }
         }
+    }
+
+    private static class SystemBarErrorException extends Exception{
     }
 
     private static View getParentView(View view) {
@@ -95,16 +103,25 @@ class Utils {
             return;
         }
         sIsInitializeNavigationBar = true;
-        Context context = view.getContext();
-        WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-        Display display = windowManager.getDefaultDisplay();
-        DisplayMetrics displayMetrics = new DisplayMetrics();
+        final Context context = view.getContext();
         try {
+            sNavigationBarHeight = getNavigationBarHeight(context.getResources());
+            if(sStatusBarHeight <= 0 && hasNavigationBar(context)){
+                throw new SystemBarErrorException();
+            }
+        } catch (Exception e) {
+            WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+            Display display = windowManager.getDefaultDisplay();
+            DisplayMetrics displayMetrics = new DisplayMetrics();
             Class<?> displayClass = display.getClass();
-            Method method = displayClass.getMethod("getRealMetrics", DisplayMetrics.class);
-            method.invoke(display, displayMetrics);
-            sNavigationBarHeight = displayMetrics.heightPixels - getDisplayHeight(display);
-        } catch (Exception ignored) {
+            Method method;
+            try {
+                method = displayClass.getMethod("getRealMetrics", DisplayMetrics.class);
+                method.invoke(display, displayMetrics);
+                sNavigationBarHeight = displayMetrics.heightPixels - getDisplayHeight(display);
+            } catch (Exception ignored) {
+            }
+
         }
     }
 

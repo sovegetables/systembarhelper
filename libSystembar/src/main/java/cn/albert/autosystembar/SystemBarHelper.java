@@ -222,12 +222,6 @@ public class SystemBarHelper implements SystemBarCompact{
                         break;
                     }
                 }
-            }else {
-                if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
-                    activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-                }else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
-                    activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-                }
             }
             boolean isExpandedLayout2NavigationBar = false;
             if(mIsImmersedNavigationBar){
@@ -236,12 +230,6 @@ public class SystemBarHelper implements SystemBarCompact{
                         isExpandedLayout2NavigationBar = navigationBar.expandLayoutToNavigationBar(activity);
                         break;
                     }
-                }
-            }else {
-                if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
-                    activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-                }else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
-                    activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
                 }
             }
             systemBarHelper.statusBarFontStyle(mStatusBarFontStyle);
