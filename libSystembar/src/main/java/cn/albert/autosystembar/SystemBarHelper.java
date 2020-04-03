@@ -131,12 +131,13 @@ public class SystemBarHelper implements SystemBarCompact{
 
         static final int NOT_SET = -1;
 
-        @ColorInt
         int mStatusBarColor = NOT_SET;
+        int mStatusBarColorRes = NOT_SET;
         boolean mIsStatusBarColorSet = false;
         @StatusBarFontStyle private int mStatusBarFontStyle = STATUS_BAR_LIGHT_FONT_STYLE;
         @ColorInt
-        private int mNavigationBarColor = NOT_SET;
+        int mNavigationBarColor = NOT_SET;
+        int mNavigationBarColorRes = NOT_SET;
         boolean mIsNavigationBarColorSet = false;
         Drawable mStatusBarDrawable;
         Drawable mNavigationBarDrawable;
@@ -169,6 +170,11 @@ public class SystemBarHelper implements SystemBarCompact{
             return this;
         }
 
+        public Builder statusBarColorRes(@ColorRes int statusBarColorRes) {
+            mStatusBarColorRes = statusBarColorRes;
+            return this;
+        }
+
         public Builder enableImmersedStatusBar(boolean enable){
             mIsImmersedStatusBar = enable;
             return this;
@@ -182,6 +188,11 @@ public class SystemBarHelper implements SystemBarCompact{
         public Builder navigationBarColor(@ColorInt int navigationBarColor){
             mIsNavigationBarColorSet = true;
             mNavigationBarColor = navigationBarColor;
+            return this;
+        }
+
+        public Builder navigationBarColorRes(@ColorRes int navigationBarColorRes) {
+            mNavigationBarColorRes = navigationBarColorRes;
             return this;
         }
 
@@ -238,8 +249,14 @@ public class SystemBarHelper implements SystemBarCompact{
             if(!isExpandedLayout2StatusBar && mIsStatusBarColorSet){
                 systemBarHelper.setStatusBarColor(mStatusBarColor);
             }
+            if(!isExpandedLayout2StatusBar && mStatusBarColorRes > 0){
+                systemBarHelper.setStatusBarColorRes(mStatusBarColorRes);
+            }
             if(!isExpandedLayout2NavigationBar && mIsNavigationBarColorSet){
                 systemBarHelper.setNavigationBarColor(mNavigationBarColor);
+            }
+            if(!isExpandedLayout2NavigationBar && mNavigationBarColorRes > 0){
+                systemBarHelper.setNavigationBarColorRes(mNavigationBarColorRes);
             }
             if(isExpandedLayout2StatusBar || isExpandedLayout2NavigationBar){
                 //沉浸StatusBar或者NavigationBar
