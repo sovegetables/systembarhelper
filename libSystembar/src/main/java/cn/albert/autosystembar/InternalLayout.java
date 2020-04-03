@@ -2,12 +2,14 @@ package cn.albert.autosystembar;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.ColorRes;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
@@ -73,12 +75,28 @@ class InternalLayout extends RelativeLayout {
         mStatusView.setBackgroundColor(statusBarColor);
     }
 
+    void setStatusBarColorRes(@ColorRes int statusBarColorRes) {
+        mStatusView.setBackgroundResource(statusBarColorRes);
+    }
+
     void setStatusBarDrawable(Drawable drawable){
         ViewCompat.setBackground(mStatusView, drawable);
     }
 
+    void setNavigationBarDrawable(Drawable drawable) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            mStatusView.setBackground(drawable);
+        }else {
+            mStatusView.setBackgroundDrawable(drawable);
+        }
+    }
+
     void setNavigationBarColor(@ColorInt int navigationBarColor){
         mNavigationView.setBackgroundColor(navigationBarColor);
+    }
+
+    void setNavigationBarColorRes(@ColorRes int navigationBarColorRes) {
+        mNavigationView.setBackgroundResource(navigationBarColorRes);
     }
 
     void setNavigationDrawable(Drawable drawable){

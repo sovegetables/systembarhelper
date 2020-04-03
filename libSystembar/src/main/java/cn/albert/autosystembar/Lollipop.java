@@ -5,6 +5,7 @@ import android.os.Build;
 import android.view.WindowManager;
 
 import androidx.annotation.RequiresApi;
+import androidx.core.content.ContextCompat;
 
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 class Lollipop extends Base {
@@ -101,5 +102,15 @@ class Lollipop extends Base {
                 break;
             }
         }
+    }
+
+    @Override
+    public void setStatusBarColorRes(int statusBarColorRes) {
+        setStatusBarColor(ContextCompat.getColor(mBuilder.mActivity, statusBarColorRes));
+    }
+
+    @Override
+    public void setNavigationBarColorRes(int navigationBarColorRes) {
+        setNavigationBarColor(ContextCompat.getColor(mBuilder.mActivity, navigationBarColorRes));
     }
 }
