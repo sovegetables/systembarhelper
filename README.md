@@ -1,6 +1,6 @@
 
 
-一句代码适配4.4以上沉浸状态栏和沉浸导航栏, 状态栏颜色和样式自动根据状态栏下面的背景颜色自动调整, 适配魅族，小米等国产手机.
+一句代码适配5.0以上沉浸状态栏和沉浸导航栏, 状态栏颜色和样式自动根据状态栏下面的背景颜色自动调整, 适配魅族，小米等国产手机.
 
 [![](https://jitpack.io/v/sovegetables/systembarhelper.svg)](https://jitpack.io/#sovegetables/systembarhelper)
 #### Usage
